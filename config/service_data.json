@@ -11,7 +11,7 @@
     "path": "../var/session/",
     "expire": 300
   },
-  "bot": "Baidu\\Iov\\Kit\\Tests\\CellularDataBot",
+  "bot": "Baidu\\Iov\\Kit\\Tests\\CellularDataService",
   "policies": [
     {
       "output": [
@@ -379,8 +379,8 @@
       "params": [],
       "trigger": {
         "intent": "INTENT_NO",
-        "slots": [],
-        "state": "007"
+        "slots" : [],
+        "state" : "007"
       }
     }
   ]

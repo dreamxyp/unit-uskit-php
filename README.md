@@ -70,7 +70,7 @@ try{
 |policies         |policy配置，如下   |
 
 ### bot类
-如果需要调用自定义函数，则需要定义bot类，并继承Baidu\Iov\Kit\Bot\Bot。
+如果需要调用自定义函数，则需要定义bot类，并继承ounun\baidu\unit\kit\Bot\Bot。
 
 在bot子类中，可以使用函数：
 * setSessionContext($key, $value)，设置session字段
@@ -206,7 +206,7 @@ param为参数列表，每个policy中可以定义一系列参数，在output中
   "value": "{%http_response%},body.results.0.data"  
 }
 ```
-用户可以自定义param handler，需要继承Baidu\Iov\Kit\Policy\ParamHandler\AbstractHandler。
+用户可以自定义param handler，需要继承ounun\baidu\unit\kit\Policy\ParamHandler\AbstractHandler。
 
 
 #### output
@@ -228,7 +228,7 @@ param为参数列表，每个policy中可以定义一系列参数，在output中
 
 > 逗号前后不能添加空格
 
-用户可以自定义assertion类，需要实现Baidu\Iov\Kit\Policy\Output\Assertion\AssertionInterface接口，并实现assert函数。type中传递assertion类名即可。
+用户可以自定义assertion类，需要实现ounun\baidu\unit\kit\Policy\Output\Assertion\AssertionInterface接口，并实现assert函数。type中传递assertion类名即可。
 
 ##### result
 result定于了us-kit返回的数据，可以为object或者string
