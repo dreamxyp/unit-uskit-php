@@ -1,0 +1,14 @@
+[
+  {
+    "service_id":"S13848",
+    "bot_ids": [],
+    "name": "个税资询",
+    "api_id":"15730287",
+    "api_key":"c64ud4XGEnlzalzF5Mt4DayY",
+    "api_secret":"eyeRrOhsLDKVh6VOmWg7oysZRps1qA85",
+    "remark": "个税资询",
+    "conf_path": "config/service_data.json",
+    "access_token": "",
+    "session_id": ""
+  }
+]
