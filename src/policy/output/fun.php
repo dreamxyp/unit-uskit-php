@@ -16,23 +16,18 @@
 namespace ounun\baidu\unit\kit\policy\output;
 
 
-use ounun\baidu\unit\kit\exception\us_kit_exception;
-use ounun\baidu\unit\kit\Policy\policy;
-use Monolog\Logger;
-use ounun\baidu\unit\kit\session\session_abstract;
+use ounun\baidu\unit\kit\chat\manager;
+use ounun\baidu\unit\kit\interfaces\policy_output;
+use ounun\baidu\unit\kit\policy\policy;
+use ounun\baidu\unit\kit\session\session;
 
-class fun implements output
+class fun implements policy_output
 {
     /**
      * @var $policy policy
      */
     public $policy;
-    private $function;
-
-    /**
-     * @var $logger Logger
-     */
-    private $logger;
+    protected $function;
 
     /**
      * PolicyFunctionOutput constructor.
@@ -44,36 +39,26 @@ class fun implements output
     }
 
     /**
-     * @param $logger
-     * @return $this
-     */
-    public function setLogger(Logger $logger)
-    {
-        $this->logger = $logger;
-        return $this;
-    }
-
-    /**
-     * @param session_abstract $session
+     * @param session $session
      * @return mixed
-     * @throws us_kit_exception
+     * @throws \Exception
      */
-    public function output(session_abstract $session)
+    public function output(session $session)
     {
         $function = $this->function;
-        $this->logger->debug('Output function: '. $function);
-        if(method_exists($this->policy->policyManager->getService(), $function)) {
-            $output = $this->policy->policyManager->getService()->$function();
+        manager::logs(__CLASS__.':'.__LINE__,'Output function: '. $function);
+        if(method_exists($this->policy->manager->service_get(), $function)) {
+            $output = $this->policy->manager->service_get()->$function();
             return $output;
         }else{
-            throw new us_kit_exception("Method '$function' doesn't exist.");
+            throw new \Exception("Method '$function' doesn't exist.");
         }
     }
 
     /**
      * @param policy $policy
      */
-    public function setPolicy(policy $policy)
+    public function policy_set(policy $policy)
     {
         $this->policy = $policy;
     }

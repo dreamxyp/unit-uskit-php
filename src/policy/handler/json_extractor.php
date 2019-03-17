@@ -16,20 +16,19 @@
 namespace ounun\baidu\unit\kit\policy\handler;
 
 
-use ounun\baidu\unit\kit\exception\us_kit_exception;
 
-class json_extractor extends handler_abstract
+class json_extractor extends handler
 {
     /**
      * @return mixed
-     * @throws us_kit_exception
+     * @throws \Exception
      */
     public function handle()
     {
         $json = explode(',', $this->value);
-        $jsonObj = $this->policy->replaceParams($json[0]);
+        $jsonObj = $this->policy->params_replace($json[0]);
         if(!is_array($jsonObj)) {
-            throw new us_kit_exception("$json[0] is not a json object.");
+            throw new \Exception("$json[0] is not a json object.");
         }
         $extractors = explode('.', $json[1]);
         foreach ($extractors as $extractor) {

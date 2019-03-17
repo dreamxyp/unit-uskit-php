@@ -15,28 +15,32 @@
 
 namespace ounun\baidu\unit\kit\policy;
 
-use Monolog\Logger;
+
+use ounun\baidu\unit\kit\chat\manager;
 
 class trigger
 {
-    const NON_INTENT = 'us_non_intent';
-    const INIT_STATE = 'us_init';
-    const ANY_STATE  = 'us_any';
+    /** @var string  */
+    const Non_Intent = 'us_non_intent';
 
-    /**
-     * @var $logger Logger
-     */
-    private $logger;
+    /** @var string  */
+    const State_Init = 'us_init';
+
+    /** @var string  */
+    const State_Any  = 'us_any';
 
     /**
      * @var $policy policy
      */
     public $policy;
 
-    private $intent;
-    private $slots;
-    private $changedSlots;
-    private $state;
+    protected $intent;
+
+    protected $slots;
+
+    protected $slots_changed;
+
+    protected $state;
 
     /**
      * PolicyTrigger constructor.
@@ -50,7 +54,7 @@ class trigger
         if (!empty($intent)) {
             $this->intent = $intent;
         } else {
-            $this->intent = self::NON_INTENT;
+            $this->intent = self::Non_Intent;
         }
         if (!empty($slots) && is_array($slots)) {
             $this->slots = $slots;
@@ -58,48 +62,38 @@ class trigger
             $this->slots = [];
         }
         if (!empty($changedSlots) && is_array($changedSlots)) {
-            $this->changedSlots = $changedSlots;
+            $this->slots_changed = $changedSlots;
         } else {
-            $this->changedSlots = [];
+            $this->slots_changed = [];
         }
 
         $this->state = $state;
     }
 
     /**
-     * @param Logger $logger
-     * @return trigger
-     */
-    public function setLogger($logger)
-    {
-        $this->logger = $logger;
-        return $this;
-    }
-
-    /**
      * @return trigger_score|bool
      */
-    public function hitTrigger()
+    public function hit_trigger()
     {
-        $session = $this->policy->policyManager->getSession();
-        $quResult = $this->policy->policyManager->getQuResult();
+        $session = $this->policy->manager->session_get();
+        $quResult = $this->policy->manager->result_get();
         $score = new trigger_score();
         //check intent constraint
-        if ($this->intent == $quResult->getIntent()) {
-            $score->setIntentScore(1);
+        if ($this->intent == $quResult->intent_get()) {
+            $score->intent_score_set(1);
         }else{
-            $this->logger->debug("[Trigger] intent doesn't match, our intent: $this->intent, quResult intent " . $quResult->getIntent());
+            manager::logs(__CLASS__.':'.__LINE__,"[Trigger] intent doesn't match, our intent: $this->intent, quResult intent " . $quResult->intent_get());
             return false;
         }
 
         if(!empty($this->state)){
             //check array state constraint
-            $currentState = $session->getSessionObject()->getState();
+            $currentState = $session->session_object_get()->getState();
             if(is_array($this->state)) {
                 if(in_array($currentState, $this->state)) {
-                    $score->setStateScore(1);
+                    $score->state_score_set(1);
                 }else{
-                    $this->logger->debug("[Trigger] state doesn't match, required state " . implode(', ', $this->state) . ", current state " . $currentState);
+                    manager::logs(__CLASS__.':'.__LINE__,"[Trigger] state doesn't match, required state " . implode(', ', $this->state) . ", current state " . $currentState);
                     return false;
                 }
             }
@@ -107,27 +101,27 @@ class trigger
             //check string state constraint
             if (is_string($this->state)) {
                 if($this->state == $currentState) {
-                    $score->setStateScore(1);
+                    $score->state_score_set(1);
                 }else{
-                    $this->logger->debug("[Trigger] state doesn't match, required state $this->state, current state " . $currentState);
+                    manager::logs(__CLASS__.':'.__LINE__,"[Trigger] state doesn't match, required state $this->state, current state " . $currentState);
                     return false;
                 }
             }
         }
 
         //check slots constraint
-        if (count($this->slots) === count(array_intersect($this->slots, array_keys($quResult->getSlots())))) {
-            $score->setSlotsScore(count($this->slots));
+        if (count($this->slots) === count(array_intersect($this->slots, array_keys($quResult->slots_get())))) {
+            $score->slots_score_set(count($this->slots));
         }else{
-            $this->logger->debug("[Trigger] slots doesn't match.");
+            manager::logs(__CLASS__.':'.__LINE__,"[Trigger] slots doesn't match.");
             return false;
         }
 
         //check changed slots constraint
-        if (count($this->changedSlots) === count(array_intersect($this->changedSlots, array_keys($quResult->getChangedSlots())))) {
-            $score->setChangedSlotsScore(count($this->changedSlots));
+        if (count($this->slots_changed) === count(array_intersect($this->slots_changed, array_keys($quResult->slots_changed_get())))) {
+            $score->slots_changed_score_set(count($this->slots_changed));
         }else{
-            $this->logger->debug("[Trigger] changed slots doesn't match.");
+            manager::logs(__CLASS__.':'.__LINE__,"[Trigger] changed slots doesn't match.");
             return false;
         }
         return $score;
@@ -148,8 +142,8 @@ class trigger
         } else {
             $slots = '';
         }
-        if (count($this->changedSlots)) {
-            $changedSlots = ', changed slots: ' . json_encode($this->changedSlots);
+        if (count($this->slots_changed)) {
+            $changedSlots = ', changed slots: ' . json_encode($this->slots_changed);
         } else {
             $changedSlots = '';
         }

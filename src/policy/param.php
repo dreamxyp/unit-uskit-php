@@ -15,15 +15,22 @@
 
 namespace ounun\baidu\unit\kit\policy;
 
-use ounun\baidu\unit\kit\exception\us_kit_exception;
+
+use ounun\baidu\unit\kit\chat\manager;
+use ounun\baidu\unit\kit\policy\handler\factory;
 
 class param
 {
     private $name;
+
     private $type;
+
     private $value;
+
     private $required;
+
     private $options;
+
     private $param;
 
     /**
@@ -52,13 +59,13 @@ class param
      * get the value of param
      *
      * @return mixed
-     * @throws us_kit_exception
+     * @throws \Exception
      */
-    public function getParam()
+    public function param_get()
     {
-        $handler = ParamHandlerFactory::getInstance($this->type, $this->policy, $this->value, $this->options);
+        $handler     = factory::instance($this->type, $this->policy, $this->value, $this->options);
         $this->param = $handler->handle();
-        $this->policy->policyManager->logger->debug("Param name: {$this->name}, value: {$this->param}");
+        manager::logs(__CLASS__.':'.__LINE__,"Param name: {$this->name}, value: {$this->param}");
 
         return $this->param;
     }

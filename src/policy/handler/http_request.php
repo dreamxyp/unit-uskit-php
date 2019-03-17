@@ -17,7 +17,7 @@ namespace ounun\baidu\unit\kit\policy\handler;
 
 use GuzzleHttp\Client;
 
-class http_request extends handler_abstract
+class http_request extends handler
 {
     /**
      * @return array
@@ -31,7 +31,7 @@ class http_request extends handler_abstract
 
         $requestOptions = [];
         foreach ($this->options as $key => $option) {
-            $requestOptions[$key] = $this->policy->replaceParams($option);
+            $requestOptions[$key] = $this->policy->params_replace($option);
         }
 
         $res = $client->request($method, $this->value, $requestOptions);

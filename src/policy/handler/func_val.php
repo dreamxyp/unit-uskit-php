@@ -16,25 +16,24 @@
 namespace ounun\baidu\unit\kit\policy\handler;
 
 
-use ounun\baidu\unit\kit\exception\us_kit_exception;
 
-class func_val extends handler_abstract
+class func_val extends handler
 {
     /**
      * @return mixed
-     * @throws us_kit_exception
+     * @throws \Exception
      */
     public function handle()
     {
         $function = explode(':', $this->value);
-        $params = explode(',', $function[1]);
+        $params   = explode(',', $function[1]);
         foreach ($params as $index => $param) {
-            $params[$index] = $this->policy->replaceParams($param);
+            $params[$index] = $this->policy->params_replace($param);
         }
 
-        if (!method_exists($this->policy->policyManager->getService(), $function[0])) {
-            throw new us_kit_exception("Function '$function[0]' not found in " . get_class($this->policy->policyManager->getService()));
+        if (!method_exists($this->policy->manager->service_get(), $function[0])) {
+            throw new \Exception("Function '$function[0]' not found in " . get_class($this->policy->manager->service_get()));
         }
-        return call_user_func_array(array($this->policy->policyManager->getService(), $function[0]), $params);
+        return call_user_func_array(array($this->policy->manager->service_get(), $function[0]), $params);
     }
 }

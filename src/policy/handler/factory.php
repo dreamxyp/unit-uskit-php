@@ -16,7 +16,7 @@
 namespace ounun\baidu\unit\kit\policy\handler;
 
 
-use ounun\baidu\unit\kit\exception\us_kit_exception;
+use ounun\baidu\unit\kit\interfaces\handler;
 use ounun\baidu\unit\kit\Policy\policy;
 
 class factory
@@ -26,10 +26,10 @@ class factory
      * @param policy $policy
      * @param $value
      * @param $options
-     * @return handler_interface
-     * @throws us_kit_exception
+     * @return handler
+     * @throws \Exception
      */
-    public static function getInstance($type, policy $policy, $value, $options)
+    public static function instance($type, policy $policy, $value, $options)
     {
         switch ($type) {
             case 'slot_val':
@@ -51,7 +51,7 @@ class factory
             case 'http_request':
                 return new http_request($policy, $value, $options);
             default:
-                throw new us_kit_exception("Param type $type is not supported.");
+                throw new \Exception("Param type $type is not supported.");
         }
     }
 }

@@ -6,7 +6,9 @@
   "require": {
     "php": ">=7.1",
     "ext-json": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "symfony/yaml": "2.8.45",
+    "guzzlehttp/guzzle": "6.3.3"
   },
   "require-dev": {
     "phpunit/phpunit": ">=4.8"

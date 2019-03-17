@@ -16,13 +16,13 @@
 namespace ounun\baidu\unit\kit\policy\handler;
 
 
-class intent_qu extends handler_abstract
+class intent_qu extends handler
 {
     /**
      * @return mixed
      */
     public function handle()
     {
-        return $this->policy->policyManager->getQuResult()->getIntent();
+        return $this->policy->manager->result_get()->intent_get();
     }
 }

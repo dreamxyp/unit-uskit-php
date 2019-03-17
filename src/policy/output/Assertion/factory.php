@@ -15,14 +15,15 @@
 
 namespace ounun\baidu\unit\kit\policy\output\assertion;
 
-use ounun\baidu\unit\kit\Exception\us_kit_exception;
+
+use ounun\baidu\unit\kit\interfaces\assertion;
 
 class factory
 {
     /**
      * @param $type
      * @return assertion
-     * @throws us_kit_exception
+     * @throws \Exception
      */
     public static function getInstance($type)
     {
@@ -47,7 +48,7 @@ class factory
                 if (is_subclass_of($type, assertion::class)) {
                     return new $type();
                 } else {
-                    throw new us_kit_exception("Assertion type $type is not supported.");
+                    throw new \Exception("Assertion type $type is not supported.");
                 }
         }
     }

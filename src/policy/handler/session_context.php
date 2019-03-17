@@ -16,7 +16,7 @@
 namespace ounun\baidu\unit\kit\policy\handler;
 
 
-class session_context extends handler_abstract
+class session_context extends handler
 {
     /**
      * @return mixed
@@ -24,7 +24,7 @@ class session_context extends handler_abstract
     public function handle()
     {
         $data = explode('.', $this->value);
-        $context = $this->policy->policyManager->getSession()->getSessionObject()->getContext();
+        $context = $this->policy->manager->session_get()->session_object_get()->getContext();
         foreach ($data as $item) {
             if (!isset($context[$item])) {
                 return null;

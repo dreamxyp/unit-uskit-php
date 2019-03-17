@@ -15,13 +15,12 @@
 
 namespace ounun\baidu\unit\kit\policy\output;
 
-use ounun\baidu\unit\kit\exception\us_kit_exception;
-use ounun\baidu\unit\kit\Policy\Output\assertion\factory;
-use ounun\baidu\unit\kit\Policy\policy;
-use Monolog\Logger;
-use ounun\baidu\unit\kit\session\session_abstract;
+use ounun\baidu\unit\kit\interfaces\policy_output;
+use ounun\baidu\unit\kit\policy\output\assertion\factory;
+use ounun\baidu\unit\kit\policy\policy;
+use ounun\baidu\unit\kit\session\session;
 
-class out implements output
+class out implements policy_output
 {
     /**
      * @var $policy policy
@@ -32,10 +31,6 @@ class out implements output
     private $session;
     private $result;
 
-    /**
-     * @var $logger Logger
-     */
-    private $logger;
 
     /**
      * PolicyOutput constructor.
@@ -50,45 +45,37 @@ class out implements output
         $this->result = $result;
     }
 
-    /**
-     * @param Logger $logger
-     * @return out
-     */
-    public function setLogger(Logger $logger)
-    {
-        $this->logger = $logger;
-        return $this;
-    }
+
 
     /**
-     * @param session_abstract $session
+     * @param session $session
      * @return bool|mixed
      */
-    public function output(session_abstract $session)
+    public function output(session $session)
     {
         if ($this->assert()) {
             if(empty($this->session['state'])) {
                 $session->clean();
             }
-            $session->getSessionObject()->setState($this->session['state']);
-            $context = $session->getSessionObject()->getContext();
+            $session->session_object_get()->setState($this->session['state']);
+            $context = $session->session_object_get()->getContext();
 
             $newContext = $this->session['context'];
             array_walk_recursive($newContext, function(&$item) {
-                $item = $this->policy->replaceParams($item);
+                $item = $this->policy->params_replace($item);
             });
-            $session->getSessionObject()->setContext(array_merge($context, $newContext));
+            $session->session_object_get()->setContext(array_merge($context, $newContext));
 
             $results = [];
-            $standardOutput = $this->policy->policyManager->getService()->getStandardOutput();
+            $standardOutput = $this->policy->manager->service_get()->getStandardOutput();
             foreach ($this->result as $item) {
                 $data = $item['value'];
                 if ($item['type'] === 'json') {
-                    $data = $this->replaceParams($data);
-                    $standardOutput = $this->policy->policyManager->getService()->getStandardOutput($data);
+                    $data = $this->params_replace($data);
+                    $standardOutput = $this->policy->manager->service_get()->getStandardOutput($data);
                     $results[] = ['type' => 'json', 'value' => $data];
                 } else {
-                    $data = $this->replaceParams($data);
+                    $data = $this->params_replace($data);
                     $results[] = ['type' => $item['type'], 'value' => $data];
                 }
             }
@@ -100,7 +87,7 @@ class out implements output
 
     /**
      * @return bool
-     * @throws us_kit_exception
+     * @throws \Exception
      */
     private function assert()
     {
@@ -112,7 +99,7 @@ class out implements output
                 return false;
             }
 
-            $value = $this->policy->replaceParams($assertion['value']);
+            $value = $this->policy->params_replace($assertion['value']);
             $type = $assertion['type'];
             $assertion = factory::getInstance($type);
             if(false === $assertion->assert($value)) {
@@ -127,25 +114,26 @@ class out implements output
      * @param policy $policy
      * @return mixed|void
      */
-    public function setPolicy(policy $policy)
+    public function policy_set(policy $policy)
     {
         $this->policy = $policy;
     }
 
+
     /**
      * @param $data
      * @return array|mixed
+     * @throws \Exception
      */
-    private function replaceParams($data)
+    private function params_replace($data)
     {
         if(is_string($data)){
-            $data = $this->policy->replaceParams($data);
+            $data = $this->policy->params_replace($data);
         }elseif(is_array($data)) {
             array_walk_recursive($data, function(&$item) {
-                $item = $this->policy->replaceParams($item);
+                $item = $this->policy->params_replace($item);
             });
         }
-
         return $data;
     }
 }

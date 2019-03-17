@@ -14,6 +14,8 @@
 // limitations under the License.
 namespace tests;
 
+use ounun\baidu\unit\kit\policy\output\assertion\assertion;
+use ounun\baidu\unit\kit\policy\output\assertion\factory;
 use PHPUnit\Framework\TestCase;
 
 class assertion_factory_test extends TestCase
@@ -21,21 +23,21 @@ class assertion_factory_test extends TestCase
     /** @throws \Exception  */
     public function testAssertionFactoryByType()
     {
-        $assertion = AssertionFactory::getInstance('eq');
-        $this->assertInstanceOf(AssertionInterface::class, $assertion);
+        $assertion = factory::getInstance('eq');
+        $this->assertInstanceOf(assertion::class, $assertion);
     }
 
     /** @throws \Exception  */
     public function testEqAssertion()
     {
-        $assertion = AssertionFactory::getInstance('eq');
+        $assertion = factory::getInstance('eq');
         $this->assertTrue($assertion->assert('1,1'));
     }
 
     /** @throws \Exception  */
     public function testCustomAssertion()
     {
-        $assertion = AssertionFactory::getInstance(TestAssertion::class);
+        $assertion = factory::getInstance(TestAssertion::class);
         $this->assertInstanceOf(TestAssertion::class, $assertion);
         $this->assertTrue($assertion->assert(null));
     }

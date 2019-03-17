@@ -2,19 +2,15 @@
 /**
  * Created by PhpStorm.
  * User: dreamxyp
- * Date: 2019/3/14
- * Time: 09:37
+ * Date: 2019/3/15
+ * Time: 12:53
  */
 
-namespace ounun\baidu\unit\kit\http;
+namespace ounun\baidu\unit\kit\chat\paras;
 
 
-class paras_service
+class service extends paras
 {
-    const Log_Id_Prefix = 'uskit_';
-
-    /** @var string =2.0，当前api版本对应协议版本号为2.0，固定值 */
-    protected $version = '2.0';
 
     /** @var string 机器人ID，service_id 与skill_ids不能同时缺失，至少一个有值。 */
     protected $service_id;
@@ -87,7 +83,7 @@ class paras_service
         $skill_ids || $this->skill_ids;
     }
 
-    public function get($query)
+    public function get(string $query)
     {
         $log_id                 = self::Log_Id_Prefix . rand(100000,9999999);
         $this->request['query'] = $query;
@@ -116,4 +112,3 @@ class paras_service
         $this->request['user_id'];
     }
 }
-

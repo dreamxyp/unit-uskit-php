@@ -15,7 +15,7 @@
 
 namespace ounun\baidu\unit\kit\policy\handler;
 
-class request_param extends handler_abstract
+class request_param extends handler
 {
     /**
      * @return mixed
@@ -23,7 +23,7 @@ class request_param extends handler_abstract
     public function handle()
     {
         $data = explode('.', $this->value);
-        $requestParam = $this->policy->policyManager->getRequestParams();
+        $requestParam = $this->policy->manager->request_rarams_get();
         foreach ($data as $item) {
             if (!isset($requestParam[$item])) {
                 return null;

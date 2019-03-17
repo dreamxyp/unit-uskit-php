@@ -15,38 +15,39 @@
 
 namespace ounun\baidu\unit\kit\session;
 
-use ounun\baidu\unit\kit\exception\us_kit_exception;
-use Monolog\Logger;
-
 class factory
 {
     /**
-     * @param $conf
-     * @param Logger $logger
-     * @param $botId
-     * @return session_abstract
-     * @throws us_kit_exception
+     * @param array  $config
+     * @param string $service_id
+     * @return file
+     * @throws \Exception
      */
-    public static function getInstance($conf, $logger, $botId)
+    public static function instance(array $config, string $service_id)
     {
-        switch ($conf['type']) {
+        $type   = $config['type'];
+        $expire = $config['expire'];
+        $path   = $config['path'];
+        switch ($type) {
             case 'file':
-                $session = new file($logger, $conf);
-                break;
-            case 'custom':
-                $class= $conf['class'];
-                if(!class_exists($class)) {
-                    throw new us_kit_exception("Session class '$class' doesn't exist.");
-                }
-                $session = new $class($logger, $conf);
-                if(!$session instanceof session_abstract) {
-                    throw new us_kit_exception('Session class should extend ounun\baidu\unit\kit\Session\AbstractSession');
-                }
+                $session = new file($path,$expire,$type);
                 break;
             default:
-                $session = new file($logger, $conf);
+                if($type){
+                    $class = $type;
+                    if(!class_exists($class)) {
+                        throw new \Exception("Session class '$class' doesn't exist.");
+                    }
+                    $session = new $class($path,$expire,$type);
+                    if(!$session instanceof session) {
+                        throw new \Exception('Session class should extend ounun\baidu\unit\kit\session\session_abstract');
+                    }
+                }else{
+                    $session = new file($path,$expire,'file');
+                }
+                break;
         }
-        $session->setServiceId($botId);
+        $session->service_id_set($service_id);
         return $session;
     }
 }

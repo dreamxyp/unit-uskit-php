@@ -15,7 +15,8 @@
 
 namespace ounun\baidu\unit\kit\loader;
 
-use ounun\baidu\unit\kit\cache\cache;
+use ounun\baidu\unit\kit\interfaces\cache;
+use ounun\baidu\unit\kit\interfaces\loader;
 
 class yaml implements loader
 {
@@ -40,10 +41,10 @@ class yaml implements loader
     public function load()
     {
         if($this->cache) {
-            $strConf = $this->cache->get($this->getKey());
+            $strConf = $this->cache->get($this->key_get());
             if(empty($strConf)) {
                 $strConf = file_get_contents($this->path);
-                $this->cache->set($this->getKey(), $strConf);
+                $this->cache->set($this->key_get(), $strConf);
             }
             return \Symfony\Component\Yaml\Yaml::parse($strConf);
         }
@@ -54,7 +55,7 @@ class yaml implements loader
      * @param cache $cache
      * @return void
      */
-    public function setCache(cache $cache = null)
+    public function cache_set(cache $cache = null)
     {
         $this->cache = $cache;
     }
@@ -62,7 +63,7 @@ class yaml implements loader
     /**
      * @return string
      */
-    private function getKey()
+    private function key_get()
     {
         return 'us_conf_' . md5($this->path);
     }

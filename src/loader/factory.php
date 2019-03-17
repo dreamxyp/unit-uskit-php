@@ -15,50 +15,57 @@
 
 namespace ounun\baidu\unit\kit\loader;
 
-use ounun\baidu\unit\kit\exception\us_kit_exception;
-use ounun\baidu\unit\kit\cache\cache;
+use ounun\baidu\unit\kit\interfaces\cache;
+use ounun\baidu\unit\kit\interfaces\loader;
 
 class factory
 {
     /**
-     * @param $conf
-     * @param $path
+     * @param string $type
+     * @param string $path
+     * @param string $cache_class
      * @return loader
-     * @throws us_kit_exception
+     * @throws \Exception
      */
-    public static function getInstance($conf, $path)
+    public static function instance(string $type = 'json', string $path = '', string $cache_class = '')
     {
-        switch ($conf['type']) {
+        // path
+        if(empty($path)){
+            throw new \Exception('Conf $path is not set.');
+        }
+        // loader
+        switch ($type) {
             case 'json':
                 $loader = new json($path);
                 break;
             case 'yaml':
                 $loader = new yaml($path);
                 break;
-            case 'custom':
-                $class = $conf['class'];
-                if(!class_exists($class)) {
-                    throw new us_kit_exception("Loader class '$class' doesn't exist.");
-                }
-                $loader = new $class($path);
-                if(!$loader instanceof loader) {
-                    throw new us_kit_exception('Loader class should implement ounun\baidu\unit\kit\ConfLoader\LoaderInterface');
+            default:
+                if($type){
+                    $class = $type;
+                    if(!class_exists($class)) {
+                        throw new \Exception("Loader class '$class' doesn't exist.");
+                    }
+                    $loader = new $class($path);
+                    if(!$loader instanceof loader) {
+                        throw new \Exception('Loader class should implement ounun\baidu\unit\kit\interfaces\loader');
+                    }
+                }else{
+                    throw new \Exception('Conf loader is not set.');
                 }
                 break;
-            default:
-                throw new us_kit_exception('Conf loader is not set.');
         }
 
-        if(!empty($conf['cache_class'])) {
-            $cacheClass = $conf['cache_class'];
-            if(!class_exists($cacheClass)) {
-                throw new us_kit_exception("Cache class '$cacheClass' doesn't exist.");
+        if($cache_class) {
+            if(!class_exists($cache_class)) {
+                throw new \Exception("Cache class '$cache_class' doesn't exist.");
             }
-            $cache = new $cacheClass();
+            $cache = new $cache_class();
             if(!$cache instanceof cache) {
-                throw new us_kit_exception('Cache class should implement ounun\baidu\unit\kit\ConfLoader\CacheInterface');
+                throw new \Exception('Cache class should implement ounun\baidu\unit\kit\interfaces\cache');
             }
-            $loader->setCache($cache);
+            $loader->cache_set($cache);
         }
 
         return $loader;

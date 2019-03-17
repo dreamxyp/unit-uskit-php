@@ -16,16 +16,17 @@
 namespace ounun\baidu\unit\kit\policy\handler;
 
 
-use ounun\baidu\unit\kit\dialog\slot;
 
-class slot_val extends handler_abstract
+use ounun\baidu\unit\kit\chat\slot;
+
+class slot_val extends handler
 {
     /**
      * @return mixed
      */
     public function handle()
     {
-        $slots = $this->policy->policyManager->getQuResult()->getSlots();
+        $slots = $this->policy->manager->result_get()->slots_get();
         $s = explode(',', $this->value);
         /**
          * @var $slot slot
@@ -34,7 +35,7 @@ class slot_val extends handler_abstract
         if (!$slot) {
             return null;
         } else {
-            return $slot->getNormalizedValue();
+            return $slot->getValueNormalized();
         }
     }
 }

@@ -15,6 +15,8 @@
 
 namespace ounun\baidu\unit\kit\policy\output\assertion;
 
+use ounun\baidu\unit\kit\interfaces\assertion;
+
 class eq implements assertion
 {
 

@@ -15,9 +15,10 @@
 
 namespace ounun\baidu\unit\kit\policy\output\assertion;
 
+use ounun\baidu\unit\kit\interfaces\assertion;
+
 class not_in implements assertion
 {
-
     /**
      * @param $value
      * @return bool
@@ -25,7 +26,7 @@ class not_in implements assertion
     public function assert($value)
     {
         $values = explode(',', $value);
-        $in = array_slice($values, 1, count($values) - 1);
+        $in     = array_slice($values, 1, count($values) - 1);
         return !in_array($values[0], $in);
     }
 }

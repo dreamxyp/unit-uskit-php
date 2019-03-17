@@ -17,103 +17,112 @@ namespace ounun\baidu\unit\kit\policy;
 
 class trigger_score
 {
-    private $intentScore = 0;
-    private $stateScore = 0;
-    private $slotsScore = 0;
-    private $changedSlotsScore = 0;
+    private $intent_score = 0;
+
+    private $state_score = 0;
+
+    private $slots_score = 0;
+
+    private $slots_changed_score = 0;
 
     /**
-     * @param trigger_score $policyTriggerScore
+     * @param trigger_score $trigger_score
      * @return bool
      */
-    public function isGreaterThan(trigger_score $policyTriggerScore)
+    public function is_greater_than(trigger_score $trigger_score)
     {
-        if ($this->intentScore > $policyTriggerScore->getIntentScore()) {
+        if ($this->intent_score > $trigger_score->intent_score_get()) {
             return true;
         }
-        if ($this->stateScore > $policyTriggerScore->getStateScore()) {
+        if ($this->state_score > $trigger_score->state_score_get()) {
             return true;
         }
-        if ($this->slotsScore > $policyTriggerScore->getSlotsScore()) {
+        if ($this->slots_score > $trigger_score->slots_score_get()) {
             return true;
         }
-        if ($this->changedSlotsScore > $policyTriggerScore->getChangedSlotsScore()) {
+        if ($this->slots_changed_score > $trigger_score->slots_changed_score_get()) {
             return true;
         }
         return false;
     }
 
     /**
-     * @param mixed $intentScore
+     * @param mixed $intent_score
      * @return trigger_score
      */
-    public function setIntentScore($intentScore)
+    public function intent_score_set($intent_score)
     {
-        $this->intentScore = $intentScore;
+        $this->intent_score = $intent_score;
         return $this;
     }
 
+
     /**
-     * @param mixed $stateScore
-     * @return trigger_score
+     * @return mixed
      */
-    public function setStateScore($stateScore)
+    public function intent_score_get()
     {
-        $this->stateScore = $stateScore;
-        return $this;
+        return $this->intent_score;
     }
 
     /**
-     * @param mixed $slotsScore
+     * @param mixed $slots_score
      * @return trigger_score
      */
-    public function setSlotsScore($slotsScore)
+    public function slots_score_set($slots_score)
     {
-        $this->slotsScore = $slotsScore;
+        $this->slots_score = $slots_score;
         return $this;
     }
 
+
+
+
+
+
     /**
-     * @param mixed $changedSlotsScore
+     * @param mixed $state_score
      * @return trigger_score
      */
-    public function setChangedSlotsScore($changedSlotsScore)
+    public function state_score_set($state_score)
     {
-        $this->changedSlotsScore = $changedSlotsScore;
+        $this->state_score = $state_score;
         return $this;
     }
 
     /**
      * @return mixed
      */
-    public function getIntentScore()
+    public function state_score_get()
     {
-        return $this->intentScore;
+        return $this->state_score;
     }
 
     /**
      * @return mixed
      */
-    public function getStateScore()
+    public function slots_score_get()
     {
-        return $this->stateScore;
+        return $this->slots_score;
     }
+
+    /**
+     * @param mixed $slots_changed_score
+     * @return trigger_score
+     */
+    public function slots_changed_score_set($slots_changed_score)
+    {
+        $this->slots_changed_score = $slots_changed_score;
+        return $this;
+    }
+
+
 
     /**
      * @return mixed
      */
-    public function getSlotsScore()
+    public function slots_changed_score_get()
     {
-        return $this->slotsScore;
+        return $this->slots_changed_score;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getChangedSlotsScore()
-    {
-        return $this->changedSlotsScore;
-    }
-
-
 }

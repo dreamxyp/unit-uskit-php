@@ -14,6 +14,10 @@
 // limitations under the License.
 namespace tests;
 
+use ounun\baidu\unit\kit\dialog\result_qu;
+use ounun\baidu\unit\kit\dialog\slot;
+use ounun\baidu\unit\kit\logger\factory;
+use ounun\baidu\unit\kit\parser\unit_bot;
 use PHPUnit\Framework\TestCase;
 
 class unit_parser_test extends TestCase
@@ -24,48 +28,48 @@ class unit_parser_test extends TestCase
      */
     public function testParserFactory()
     {
-        $logger = LoggerFactory::getInstance([
+        $logger = factory::getInstance([
             'handler' => 'stream',
             'args' => [
                 'php://stderr',
                 'critical'
             ]
         ]);
-        $parser = ParserFactory::getInstance([
+        $parser = \ounun\baidu\unit\kit\parser\factory::getInstance([
             'type' => 'unit_bot',
         ], $logger);
 
-        $this->assertInstanceOf(UnitBotParser::class, $parser);
+        $this->assertInstanceOf(unit_bot::class, $parser);
         return $parser;
     }
 
     /**
      * @depends testParserFactory
-     * @param UnitBotParser $parser
+     * @param unit_bot $parser
      * @return mixed
      * @throws \Exception
      */
-    public function testUnitBotParser(UnitBotParser $parser)
+    public function testUnitBotParser(unit_bot $parser)
     {
-        $response = json_decode(file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'response/response1.json'), true);
+        $response = json_decode(file_get_contents(__DIR__ . 'res/response1.json'), true);
         $quResultMap = $parser->parse($response);
         $this->assertArrayHasKey('11505', $quResultMap);
         $quResult = $quResultMap['11505'];
-        $this->assertInstanceOf(QuResult::class, $quResult);
+        $this->assertInstanceOf(result_qu::class, $quResult);
         return $quResult;
     }
 
     /**
      * @depends testUnitBotParser
-     * @param QuResult $quResult
+     * @param result_qu $quResult
      */
-    public function testQuResult(QuResult $quResult)
+    public function testQuResult(result_qu $quResult)
     {
         $this->assertEquals('INTENT_ADJUST_QUOTA', $quResult->getIntent());
         $slots = $quResult->getSlots();
         foreach ($slots as $slot) {
             $slot = current($slot);
-            $this->assertInstanceOf(Slot::class, $slot);
+            $this->assertInstanceOf(slot::class, $slot);
             $this->assertEquals('user_method', $slot->getKey());
         }
     }

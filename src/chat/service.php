@@ -15,40 +15,39 @@
 
 namespace ounun\baidu\unit\kit\chat;
 
-use ounun\baidu\unit\kit\dialog\result_qu;
-use ounun\baidu\unit\kit\session\session_abstract;
+use ounun\baidu\unit\kit\session\session;
 
 class service
 {
-    private $retryLimit;
+    protected $retry_limit;
 
-    /** @var $session session_abstract */
+    /** @var $session session */
     protected $session;
 
-    /** @var $quResult result_qu */
-    protected $quResult;
+    /** @var $result result */
+    protected $result;
 
-
-    protected $requestParams;
+    /** @var array */
+    protected $request_params;
 
     /**
      * Bot constructor.
-     * @param session_abstract $session
-     * @param $retryLimit
+     * @param session $session
+     * @param int              $retry_limit
      */
-    public function __construct(session_abstract $session, $retryLimit)
+    public function __construct(session $session, int $retry_limit)
     {
-        $this->session    = $session;
-        $this->retryLimit = $retryLimit;
+        $this->session     = $session;
+        $this->retry_limit = $retry_limit;
     }
 
     /**
-     * @param result_qu $quResult
+     * @param result $result
      * @return service
      */
-    public function setQuResult($quResult)
+    public function setResult($result)
     {
-        $this->quResult = $quResult;
+        $this->result = $result;
         return $this;
     }
 
@@ -56,9 +55,9 @@ class service
      * @param mixed $requestParams
      * @return service
      */
-    public function setRequestParams($requestParams)
+    public function request_params_set($requestParams)
     {
-        $this->requestParams = $requestParams;
+        $this->request_params = $requestParams;
         return $this;
     }
 
@@ -68,18 +67,18 @@ class service
      */
     protected function setSessionContext($key, $value)
     {
-        $context = $this->session->getSessionObject()->getContext();
+        $context = $this->session->session_object_get()->getContext();
         $context[$key] = $value;
-        $this->session->getSessionObject()->setContext($context);
+        $this->session->session_object_get()->setContext($context);
     }
 
     /**
      * @param $key
      * @return mixed
      */
-    protected function getSessionContext($key)
+    protected function session_context_get($key)
     {
-        $context = $this->session->getSessionObject()->getContext();
+        $context = $this->session->session_object_get()->getContext();
         return $context[$key];
     }
 
@@ -87,9 +86,9 @@ class service
      * @param $key
      * @return mixed
      */
-    public function getSlot($key)
+    public function slot_get($key)
     {
-        return $this->session->getSessionObject()->getSlot($key);
+        return $this->session->session_object_get()->getSlot($key);
     }
 
     /**
@@ -101,7 +100,7 @@ class service
      */
     protected function result($cardType, $intent, $tts = '', $data = array())
     {
-        $retryTime = $this->getSessionContext('retry_time');
+        $retryTime = $this->session_context_get('retry_time');
         if (!$retryTime) {
             $this->setSessionContext('last_card_type', $cardType);
             $this->setSessionContext('last_intent', $intent);
@@ -129,14 +128,14 @@ class service
     protected function setState($state)
     {
         $this->setSessionContext('retry_time', 0);
-        $this->session->getSessionObject()->setState($state);
+        $this->session->session_object_get()->setState($state);
     }
 
     /**
      * @param $tts
      * @return $this
      */
-    protected function setRetryTts($tts)
+    protected function retry_tts_set($tts)
     {
         $this->setSessionContext('retry_tts', $tts);
         return $this;
@@ -147,13 +146,13 @@ class service
      */
     public function retry()
     {
-        $cardType = $this->getSessionContext('last_card_type');
-        $intent = $this->getSessionContext('last_intent');
-        $tts = $this->getSessionContext('retry_tts') ? $this->getSessionContext('retry_tts') : $this->getSessionContext('last_tts');
-        $data = $this->getSessionContext('last_data');
-        $retryTime = $this->getSessionContext('retry_time');
+        $cardType = $this->session_context_get('last_card_type');
+        $intent = $this->session_context_get('last_intent');
+        $tts = $this->session_context_get('retry_tts') ? $this->session_context_get('retry_tts') : $this->session_context_get('last_tts');
+        $data = $this->session_context_get('last_data');
+        $retryTime = $this->session_context_get('retry_time');
         $this->setSessionContext('retry_time', $retryTime + 1);
-        if ($retryTime >= $this->retryLimit) {
+        if ($retryTime >= $this->retry_limit) {
             //when exceeding the limit of retry, clean the session and exit
             $this->session->clean();
             return false;
@@ -172,7 +171,7 @@ class service
             $sessionId = $data['bot_session_id'];
             unset($data['bot_session_id']);
         }else{
-            $sessionId = $this->quResult->getSessionId();
+            $sessionId = $this->result->session_id_get();
         }
 
         // you can set a confidence score for the result
@@ -184,13 +183,13 @@ class service
             $score = 100;
         }
 
-        if($this->session->getShouldDelete()){
+        if($this->session->should_delete_get()){
             $sessionId = '';
         }
 
         return [
-            'raw_query' => $this->requestParams['word'] ?? '',
-            'bot_id' => $this->quResult->getServerId(),
+            'raw_query' => $this->request_params['word'] ?? '',
+            'bot_id' => $this->result->server_id_get(),
             'bot_session_id' => $sessionId,
             'score' => $score,
         ];

@@ -15,25 +15,28 @@
 
 namespace ounun\baidu\unit\kit\session;
 
-use ounun\baidu\unit\kit\Policy\trigger;
+
+use ounun\baidu\unit\kit\policy\trigger;
 
 class object
 {
     private $state;
+
     private $slots;
+
     private $context;
 
     public function __construct()
     {
-        $this->slots = [];
+        $this->slots   = [];
         $this->context = [];
-        $this->state = trigger::INIT_STATE;
+        $this->state   = trigger::State_Init;
     }
 
     /**
      * @return mixed
      */
-    public function getState()
+    public function state_get()
     {
         return $this->state;
     }
@@ -42,7 +45,7 @@ class object
      * @param mixed $state
      * @return object
      */
-    public function setState($state)
+    public function state_set($state)
     {
         $this->state = $state;
         return $this;
@@ -51,7 +54,7 @@ class object
     /**
      * @return mixed
      */
-    public function getContext()
+    public function context_get()
     {
         return $this->context;
     }
@@ -60,7 +63,7 @@ class object
      * @param mixed $context
      * @return object
      */
-    public function setContext($context)
+    public function context_set($context)
     {
         $this->context = $context;
         return $this;
@@ -69,7 +72,7 @@ class object
     /**
      * @return mixed
      */
-    public function getSlots()
+    public function slots_get()
     {
         return $this->slots;
     }
@@ -78,7 +81,7 @@ class object
      * @param mixed $slots
      * @return object
      */
-    public function setSlots($slots)
+    public function slots_set($slots)
     {
         $this->slots = $slots;
         return $this;
@@ -88,7 +91,7 @@ class object
      * @param $key
      * @return mixed
      */
-    public function getSlot($key)
+    public function slot_one_get($key)
     {
         return $this->slots[$key][0];
     }

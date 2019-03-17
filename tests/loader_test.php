@@ -14,6 +14,9 @@
 // limitations under the License.
 namespace tests;
 
+use ounun\baidu\unit\kit\loader\factory;
+use ounun\baidu\unit\kit\loader\json;
+use ounun\baidu\unit\kit\loader\yaml;
 use PHPUnit\Framework\TestCase;
 
 class loader_test extends TestCase
@@ -25,8 +28,8 @@ class loader_test extends TestCase
             'type' => 'json',
         ];
 
-        $loader = LoaderFactory::getInstance($loaderConf, $this->getConfigPath() . DIRECTORY_SEPARATOR . 'quota_adjust.json');
-        $this->assertInstanceOf(JsonLoader::class, $loader);
+        $loader = factory::instance($loaderConf, $this->getConfigPath() . 'quota_adjust.json');
+        $this->assertInstanceOf(json::class, $loader);
         $conf = $loader->load();
         $this->assertArrayHasKey('policies', $conf);
     }
@@ -34,12 +37,9 @@ class loader_test extends TestCase
     /** @throws \Exception */
     public function testYamlLoader()
     {
-        $loaderConf = [
-            'type' => 'yaml',
-        ];
-
-        $loader = LoaderFactory::getInstance($loaderConf, $this->getConfigPath() . DIRECTORY_SEPARATOR . 'quota_adjust.yml');
-        $this->assertInstanceOf(YamlLoader::class, $loader);
+        $loaderConf = [ 'type' => 'yaml', ];
+        $loader     = factory::instance($loaderConf, $this->getConfigPath() . 'quota_adjust.yml');
+        $this->assertInstanceOf(yaml::class, $loader);
         $conf = $loader->load();
         $this->assertArrayHasKey('policies', $conf);
     }

@@ -15,30 +15,32 @@
 
 namespace ounun\baidu\unit\kit\session;
 
+use ounun\baidu\unit\kit\chat\manager;
+
 /**
  * Basic file session, only works on single server architecture
  *
  * Class FileSession
  * @package ounun\baidu\unit\kit\Session
  */
-class file extends session_abstract
+class file extends session
 {
     /**
      * @return object
      */
     public function read()
     {
-        $filename = $this->getFilename();
+        $filename = $this->_filename();
         if (!is_file($filename)) {
-            $this->sessionObject = new object();
+            $this->session_object = new object();
         } elseif (time() - filemtime($filename) > $this->expire) {
             unlink($filename);
-            $this->sessionObject = new object();
+            $this->session_object = new object();
         } else {
-            $this->sessionObject = unserialize(file_get_contents($filename));
+            $this->session_object = unserialize(file_get_contents($filename));
         }
-        $this->logger->debug('Read Session: ' . serialize($this->sessionObject));
-        return $this->sessionObject;
+        manager::logs(__CLASS__.':'.__LINE__,'Read Session: ' . serialize($this->session_object));
+        return $this->session_object;
     }
 
     /**
@@ -46,26 +48,28 @@ class file extends session_abstract
      */
     public function write()
     {
-        $filename = $this->getFilename();
-        if ($this->shouldDelete && file_exists($filename)) {
-            $this->logger->debug('Delete Session: ' . $this->getKey());
+        $filename = $this->_filename();
+        if ($this->should_delete && file_exists($filename)) {
+            manager::logs(__CLASS__.':'.__LINE__,'Delete Session: ' . $this->key_get());
             unlink($filename);
         } else {
-            $this->logger->debug('Write Session: ' . serialize($this->sessionObject));
-            file_put_contents($filename, serialize($this->sessionObject));
+            manager::logs(__CLASS__.':'.__LINE__,'Write Session: ' . serialize($this->session_object));
+            file_put_contents($filename, serialize($this->session_object));
         }
     }
 
     /**
      * @return string
      */
-    private function getFilename()
+    protected function _filename()
     {
-        $path = Dir_Root.'cache/session/';
+        $md5  = md5($this->key_get());
+        $path = Dir_Root.'data/session/';
+        $path = "{$path}{$md5[0]}{$md5[1]}/{$md5[2]}{$md5[3]}/";
+        $file = $path.substr($md5,4);
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
         }
-        $filename = $path . 'session_' . $this->getKey();
-        return $filename;
+        return $file;
     }
 }

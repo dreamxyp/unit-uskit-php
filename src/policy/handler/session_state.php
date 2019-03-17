@@ -16,13 +16,13 @@
 namespace ounun\baidu\unit\kit\policy\handler;
 
 
-class session_state extends handler_abstract
+class session_state extends handler
 {
     /**
      * @return mixed
      */
     public function handle()
     {
-        return $this->policy->policyManager->getSession()->getSessionObject()->getState();
+        return $this->policy->manager->session_get()->session_object_get()->getState();
     }
 }

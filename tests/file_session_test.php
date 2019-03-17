@@ -14,47 +14,51 @@
 // limitations under the License.
 namespace tests;
 
+use ounun\baidu\unit\kit\logger\factory;
+use ounun\baidu\unit\kit\session\file;
+use ounun\baidu\unit\kit\session\object;
+use ounun\baidu\unit\kit\session\session;
 use PHPUnit\Framework\TestCase;
 
 class file_session_test extends TestCase
 {
 
     /**
-     * @return \ounun\baidu\unit\kit\Session\AbstractSession
+     * @return session
      * @throws \Exception
      */
     public function testFileSession()
     {
-        $logger = LoggerFactory::getInstance([
+        $logger = factory::getInstance([
             'handler' => 'stream',
             'args' => [
                 'php://stderr',
                 'critical'
             ]
         ]);
-        $session = SessionFactory::getInstance([
+        $session = \ounun\baidu\unit\kit\session\factory::instance([
             'type' => 'file',
             'expire' => 300
         ], $logger, 100);
-        $this->assertInstanceOf(FileSession::class, $session);
+        $this->assertInstanceOf(file::class, $session);
         return $session;
     }
 
     /**
      * @depends testFileSession
-     * @param FileSession $session
+     * @param file $session
      */
-    public function testInitRead(FileSession $session)
+    public function testInitRead(file $session)
     {
         $sessionObject = $session->read();
-        $this->assertInstanceOf(SessionObject::class, $sessionObject);
+        $this->assertInstanceOf(object::class, $sessionObject);
     }
 
     /**
      * @depends testFileSession
-     * @param FileSession $session
+     * @param file $session
      */
-    public function testWriteSession(FileSession $session)
+    public function testWriteSession(file $session)
     {
         $sessionObject = $session->read();
         $sessionObject->setState('test_state');

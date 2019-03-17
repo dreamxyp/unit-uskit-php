@@ -18,7 +18,7 @@ defined('Dir_Root') || define('Dir_Root', realpath(__DIR__.'/../../') . DIRECTOR
 
 require Dir_Root . 'vendor/autoload.php';
 
-$config_file = Dir_Root . 'config/service.json';
+$config_file = Dir_Root . 'data/config/service.json';
 $config      = json_decode(file_get_contents($config_file), true);
 
 if($config && is_array($config)){
@@ -49,16 +49,15 @@ try{
         echo "请安提示输入正确的数据. \n";
         exit;
     }
-    $policyManager = ounun\baidu\unit\kit\PolicyManagerFactory::getInstance($config_curr);
-}catch ( \ounun\baidu\unit\kit\Exception\UsException $e){
+    $policyManager = \ounun\baidu\unit\kit\chat\manager::instance($config_curr);
+}catch ( \Exception $e){
     echo $e->getMessage()."\n";
     exit();
 }
 
 echo "Entered bot, you can say something to test. \n";
 
-$requestUnit  = new \ounun\baidu\unit\kit\http\request();
-$access_token = $requestUnit->access_token_get($config_curr['api_key'],$config_curr['api_secret']);
+$access_token = \ounun\baidu\unit\kit\tool\request::access_token_get($config_curr['api_key'],$config_curr['api_secret']);
 if(empty($access_token)){
     echo "获取\$access_token有误\n";
     exit();
@@ -66,7 +65,7 @@ if(empty($access_token)){
     echo "\$access_token:{$access_token}\n";
 }
 
-$paras_service = new \ounun\baidu\unit\kit\http\ParasService('test_'.date("Ymd"),$config_curr['service_id']);
+$paras_service = new \ounun\baidu\unit\kit\tool\paras_service('test_'.date("Ymd"),$config_curr['service_id']);
 
 while ($word = trim(fgets($stdin))) {
     try {
@@ -74,9 +73,7 @@ while ($word = trim(fgets($stdin))) {
         $payload = $paras_service->get($word);
         //unit response
         try{
-            $ret = $requestUnit->requestUnit($access_token, $payload);
-        }catch (\GuzzleHttp\Exception\GuzzleException $e){
-            exit("GuzzleException:{$e->getMessage()}\n");
+            $ret = \ounun\baidu\unit\kit\tool\request::rebot_chat($access_token, $payload);
         }catch (\Exception $e){
             exit("Exception:{$e->getMessage()}\n");
         }

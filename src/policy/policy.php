@@ -15,19 +15,23 @@
 
 namespace ounun\baidu\unit\kit\policy;
 
-use ounun\baidu\unit\kit\exception\us_kit_exception;
-use ounun\baidu\unit\kit\Policy\Output\output;
+
+use ounun\baidu\unit\kit\chat\manager;
+use ounun\baidu\unit\kit\interfaces\policy_output;
 
 class policy
 {
-    private $policyTrigger;
-    private $policyParams;
-    private $policyOutputs;
+    /** @var trigger  */
+    private $trigger;
 
-    /**
-     * @var $policyManager manager
-     */
-    public $policyManager;
+    /** @var array */
+    private $params;
+
+    /** @var array */
+    private $outputs;
+
+    /** @var $manager manager  */
+    public $manager;
 
     /**
      * Policy constructor.
@@ -36,21 +40,21 @@ class policy
      * @param $policyOutputs
      * @param manager $policyManager
      */
-    public function __construct(trigger $policyTrigger, $policyParams, $policyOutputs, manager $policyManager)
+    public function __construct(trigger $policyTrigger, array $policyParams, array $policyOutputs, manager $policyManager)
     {
-        $this->policyTrigger = $policyTrigger;
-        $this->policyParams  = $policyParams;
-        $this->policyOutputs = $policyOutputs;
-        $this->policyManager = $policyManager;
+        $this->trigger = $policyTrigger;
+        $this->params  = $policyParams;
+        $this->outputs = $policyOutputs;
+        $this->manager = $policyManager;
 
-        $this->policyTrigger->policy = $this;
-        foreach ($this->policyOutputs as $policyOutput) {
+        $this->trigger->policy = $this;
+        foreach ($this->outputs as $policyOutput) {
             /**
-             * @var $policyOutput output
+             * @var $policyOutput policy_output
              */
-            $policyOutput->setPolicy($this);
+            $policyOutput->policy_set($this);
         }
-        foreach ($this->policyParams as $policyParam) {
+        foreach ($this->params as $policyParam) {
             /**
              * @var $policyParam param
              */
@@ -61,35 +65,34 @@ class policy
     /**
      * @return trigger
      */
-    public function getPolicyTrigger()
+    public function trigger_get()
     {
-        return $this->policyTrigger;
+        return $this->trigger;
     }
 
     /**
      * @return mixed
      */
-    public function getPolicyParams()
+    public function outputs_get()
     {
-        return $this->policyParams;
+        return $this->outputs;
     }
 
     /**
      * @return mixed
      */
-    public function getPolicyOutputs()
+    public function params_get()
     {
-        return $this->policyOutputs;
+        return $this->params;
     }
-
     /**
      * @param $str
      * @return mixed
-     * @throws us_kit_exception
+     * @throws \Exception
      */
-    public function replaceParams($str)
+    public function params_replace($str)
     {
-        $params = $this->getPolicyParams();
+        $params  = $this->params_get();
         $matches = [];
         preg_match_all('/{%([a-zA-Z\-_]+)%}/', $str, $matches);
         foreach ($matches[1] as $key => $match) {
@@ -98,9 +101,9 @@ class policy
              */
             $param = $params[$match];
             if (!$param) {
-                throw new us_kit_exception('Param ' . $match . ' not exists.');
+                throw new \Exception('Param ' . $match . ' not exists.');
             }
-            $value = $param->getParam();
+            $value = $param->param_get();
             if (is_array($value)) {
                 $value = json_encode($value);
                 $str = str_replace($matches[0][$key], $value, $str);
