@@ -18,7 +18,7 @@ namespace ounun\baidu\unit\kit\policy\handler;
 
 use ounun\baidu\unit\kit\Policy\policy;
 
-abstract class handler implements \ounun\baidu\unit\kit\interfaces\hanlder
+abstract class handler implements \ounun\baidu\unit\kit\interfaces\handler
 {
     protected $policy;
 
@@ -29,7 +29,7 @@ abstract class handler implements \ounun\baidu\unit\kit\interfaces\hanlder
     /**
      * AbstractHandler constructor.
      * @param policy $policy
-     * @param $value
+     * @param mixed $value
      * @param array $options
      */
     public function __construct(policy $policy, $value, $options = [])

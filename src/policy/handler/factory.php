@@ -29,7 +29,7 @@ class factory
      * @return handler
      * @throws \Exception
      */
-    public static function instance($type, policy $policy, $value, $options)
+    public static function instance(string $type, policy $policy, $value, $options)
     {
         switch ($type) {
             case 'slot_val':

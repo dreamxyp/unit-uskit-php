@@ -67,12 +67,12 @@ class out implements policy_output
             $session->session_object_get()->setContext(array_merge($context, $newContext));
 
             $results = [];
-            $standardOutput = $this->policy->manager->service_get()->getStandardOutput();
+            $standardOutput = $this->policy->manager->service_get()->standard_output_get();
             foreach ($this->result as $item) {
                 $data = $item['value'];
                 if ($item['type'] === 'json') {
                     $data = $this->params_replace($data);
-                    $standardOutput = $this->policy->manager->service_get()->getStandardOutput($data);
+                    $standardOutput = $this->policy->manager->service_get()->standard_output_get($data);
                     $results[] = ['type' => 'json', 'value' => $data];
                 } else {
                     $data = $this->params_replace($data);

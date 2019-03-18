@@ -39,7 +39,7 @@ class slot
 
     /**
      * @param mixed $key
-     * @return slot
+     * @return $this
      */
     public function key_set($key)
     {
@@ -57,7 +57,7 @@ class slot
 
     /**
      * @param mixed $value
-     * @return slot
+     * @return $this
      */
     public function value_set($value)
     {
@@ -68,16 +68,16 @@ class slot
     /**
      * @return mixed
      */
-    public function getValueNormalized()
+    public function value_normalized_get()
     {
         return $this->value_normalized;
     }
 
     /**
      * @param mixed $value_normalized
-     * @return slot
+     * @return $this
      */
-    public function setValueNormalized($value_normalized)
+    public function value_normalized_set($value_normalized)
     {
         $this->value_normalized = $value_normalized;
         return $this;
@@ -86,16 +86,16 @@ class slot
     /**
      * @return mixed
      */
-    public function getBegin()
+    public function begin_get()
     {
         return $this->begin;
     }
 
     /**
      * @param mixed $begin
-     * @return slot
+     * @return $this
      */
-    public function setBegin($begin)
+    public function begin_set($begin)
     {
         $this->begin = $begin;
         return $this;

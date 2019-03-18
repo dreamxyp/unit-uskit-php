@@ -17,7 +17,7 @@ namespace ounun\baidu\unit\kit\interfaces;
 
 /**
  * Interface ParserInterface
- * @package ounun\baidu\unit\kit\Parser
+ * @package ounun\baidu\unit\kit\parser
  */
 interface parser
 {

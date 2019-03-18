@@ -31,8 +31,6 @@ class result
 
     private $say;
 
-    private $server_id;
-
     private $session_id;
 
     /**
@@ -59,24 +57,6 @@ class result
     public function intent_set($intent)
     {
         $this->intent = $intent;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function server_id_get()
-    {
-        return $this->server_id;
-    }
-
-    /**
-     * @param mixed $server_id
-     * @return result
-     */
-    public function server_id_set($server_id)
-    {
-        $this->server_id = $server_id;
         return $this;
     }
 

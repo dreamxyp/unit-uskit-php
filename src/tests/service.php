@@ -71,7 +71,7 @@ while ($word = trim(fgets($stdin))) {
     try {
 
         $payload = $paras_service->get($word);
-        //unit response
+        // unit response
         try{
             $ret = \ounun\baidu\unit\kit\tool\request::rebot_chat($access_token, $payload);
         }catch (\Exception $e){
@@ -81,14 +81,14 @@ while ($word = trim(fgets($stdin))) {
             echo "Request unit failed!";
             exit(-1);
         }
-        //us-kit output
+        // us-kit output
         $output = $policyManager->setRequestParams(['cuid' => 'test_user'])->setQuResults($ret)->output($unitSay);
 
         if(false === $output) {
-            //当unit未召回意图时，返回兜底话术
+            // 当unit未召回意图时，返回兜底话术
             echo $unitSay . "\n";
         }else{
-            //返回配置的内容，可进行后续处理
+            // 返回配置的内容，可进行后续处理
             echo json_encode($output['results'], JSON_UNESCAPED_UNICODE) . "\n";
         }
         $botSession = $ret['result']['bot_session'];

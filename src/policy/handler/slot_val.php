@@ -15,8 +15,6 @@
 
 namespace ounun\baidu\unit\kit\policy\handler;
 
-
-
 use ounun\baidu\unit\kit\chat\slot;
 
 class slot_val extends handler
@@ -35,7 +33,7 @@ class slot_val extends handler
         if (!$slot) {
             return null;
         } else {
-            return $slot->getValueNormalized();
+            return $slot->value_normalized_get();
         }
     }
 }

@@ -19,6 +19,10 @@ use ounun\baidu\unit\kit\session\session;
 
 class service
 {
+    /** @var int */
+    protected $service_id;
+
+    /** @var int */
     protected $retry_limit;
 
     /** @var $session session */
@@ -42,10 +46,28 @@ class service
     }
 
     /**
+     * @return mixed
+     */
+    public function service_id_get()
+    {
+        return $this->service_id;
+    }
+
+    /**
+     * @param string $service_id
+     * @return $this
+     */
+    public function service_id_set($service_id)
+    {
+        $this->service_id = $service_id;
+        return $this;
+    }
+
+    /**
      * @param result $result
      * @return service
      */
-    public function setResult($result)
+    public function result_set($result)
     {
         $this->result = $result;
         return $this;
@@ -65,20 +87,20 @@ class service
      * @param $key
      * @param $value
      */
-    protected function setSessionContext($key, $value)
+    public function session_context_set($key, $value)
     {
-        $context = $this->session->session_object_get()->getContext();
+        $context = $this->session->session_object_get()->context_get();
         $context[$key] = $value;
-        $this->session->session_object_get()->setContext($context);
+        $this->session->session_object_get()->set_context($context);
     }
 
     /**
      * @param $key
      * @return mixed
      */
-    protected function session_context_get($key)
+    public function session_context_get($key)
     {
-        $context = $this->session->session_object_get()->getContext();
+        $context = $this->session->session_object_get()->context_get();
         return $context[$key];
     }
 
@@ -98,18 +120,18 @@ class service
      * @param array $data
      * @return array
      */
-    protected function result($cardType, $intent, $tts = '', $data = array())
+    public function result($cardType, $intent, $tts = '', $data = array())
     {
         $retryTime = $this->session_context_get('retry_time');
         if (!$retryTime) {
-            $this->setSessionContext('last_card_type', $cardType);
-            $this->setSessionContext('last_intent', $intent);
-            $this->setSessionContext('last_tts', $tts);
-            $this->setSessionContext('last_data', $data);
-            $this->setSessionContext('retry_tts', null);
+            $this->session_context_set('last_card_type', $cardType);
+            $this->session_context_set('last_intent', $intent);
+            $this->session_context_set('last_tts', $tts);
+            $this->session_context_set('last_data', $data);
+            $this->session_context_set('retry_tts', null);
         }
 
-        return array_merge($this->getStandardOutput($data), ['results' =>
+        return array_merge($this->standard_output_get($data), ['results' =>
             [[
                 'type'  => 'json',
                 'value' => array_merge([
@@ -125,9 +147,9 @@ class service
      *
      * @param $state
      */
-    protected function setState($state)
+    public function state_set($state)
     {
-        $this->setSessionContext('retry_time', 0);
+        $this->session_context_set('retry_time', 0);
         $this->session->session_object_get()->setState($state);
     }
 
@@ -137,7 +159,7 @@ class service
      */
     protected function retry_tts_set($tts)
     {
-        $this->setSessionContext('retry_tts', $tts);
+        $this->session_context_set('retry_tts', $tts);
         return $this;
     }
 
@@ -151,7 +173,7 @@ class service
         $tts = $this->session_context_get('retry_tts') ? $this->session_context_get('retry_tts') : $this->session_context_get('last_tts');
         $data = $this->session_context_get('last_data');
         $retryTime = $this->session_context_get('retry_time');
-        $this->setSessionContext('retry_time', $retryTime + 1);
+        $this->session_context_set('retry_time', $retryTime + 1);
         if ($retryTime >= $this->retry_limit) {
             //when exceeding the limit of retry, clean the session and exit
             $this->session->clean();
@@ -165,7 +187,7 @@ class service
      * @param array $data
      * @return array
      */
-    public function getStandardOutput(&$data = [])
+    public function standard_output_get(&$data = [])
     {
         if(key_exists('bot_session_id', $data)) {
             $sessionId = $data['bot_session_id'];

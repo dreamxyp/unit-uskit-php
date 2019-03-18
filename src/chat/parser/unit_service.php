@@ -31,7 +31,7 @@ use ounun\baidu\unit\kit\policy\trigger;
 class unit_service implements parser
 {
     /** @var array */
-    private $quResultMap;
+    private $result_map;
 
     /**
      * @param $response
@@ -56,13 +56,13 @@ class unit_service implements parser
         foreach ($slots as $unitSlot) {
             $slot = new slot();
             $slot->key_set($unitSlot['name'])
-                ->value_set($unitSlot['original_word'])
-                ->setValueNormalized($unitSlot['normalized_word'])
-                ->setBegin($unitSlot['begin']);
+                 ->value_set($unitSlot['original_word'])
+                 ->value_normalized_set($unitSlot['normalized_word'])
+                 ->begin_set($unitSlot['begin']);
             $slotsMap[] = $slot;
         }
         usort($slotsMap, function(slot $a, slot $b) {
-            return $a->getBegin() < $b->getBegin() ? -1 : 1;
+            return $a->begin_get() < $b->begin_get() ? -1 : 1;
         });
         foreach ($slotsMap as $item) {
             $quResult->slot_add($item);
@@ -72,7 +72,7 @@ class unit_service implements parser
             $quResult->say_set($say);
         }
         $quResultMap[$botId] = $quResult;
-        $this->quResultMap = $quResultMap;
+        $this->result_map = $quResultMap;
         return $quResultMap;
     }
 

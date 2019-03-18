@@ -28,25 +28,21 @@ use ounun\baidu\unit\kit\tool\request;
 class manager
 {
     /** @var array */
-    private $policyMap;
+    private $policy_map;
 
     /** @var array */
     private $request_params;
 
-    /** @var session  */
-    private $session;
+    /** @var result  */
+    private $result;
 
     /** @var parser  */
     private $parser;
 
-    /** @var int */
-    private $serviceId;
 
-    /** @var service  */
+
+    /** @var service */
     private $service;
-
-    /** @var result  */
-    private $result;
 
     /**
      * manager constructor.
@@ -61,37 +57,9 @@ class manager
 
 
 
-    /**
-     * inject nlu results from NLU providers
-     *
-     * @param $quResults
-     * @return $this
-     * @throws \Exception
-     */
-    public function setQuResults($quResults)
-    {
-        $quResultMap = $this->parser->parse($quResults);
-        if ($this->serviceId) {
-            $this->result = $quResultMap[$this->serviceId];
-            if (!$this->result) {
-                return $this;
-            }
-            $this->service->setResult($this->result);
-        } else {
-            throw new \Exception('BotId is not set.');
-        }
-        return $this;
-    }
 
-    /**
-     * @param service $service
-     * @return $this
-     */
-    public function setService(service $service)
-    {
-        $this->service = $service;
-        return $this;
-    }
+
+
 
     /**
      * load the policy parameters and build Policy class
@@ -101,7 +69,7 @@ class manager
      */
     public function load($policies)
     {
-        if (!$this->policyMap)
+        if (!$this->policy_map)
         {
             $policyMap = [];
             foreach ($policies as $policy) {
@@ -132,9 +100,9 @@ class manager
                 $policyMap[$mapKey][] = $policyObject;
 
             }
-            $this->policyMap = $policyMap;
+            $this->policy_map = $policyMap;
         }
-        return $this->policyMap;
+        return $this->policy_map;
     }
 
     /**
@@ -158,7 +126,7 @@ class manager
         }
         $this->result->slots_changed_build($this->session->session_object_get());
         $this->session->session_object_get()->setSlots($allSlots);
-        if (!isset($this->policyMap[$this->result->intent_get()])) {
+        if (!isset($this->policy_map[$this->result->intent_get()])) {
             $this->session->clean();
             manager::logs(__CLASS__.':'.__LINE__,'Current intent ' . $this->result->intent_get() . " doesn't match.");
             return false;
@@ -166,7 +134,7 @@ class manager
         manager::logs(__CLASS__.':'.__LINE__,'Current quResult ' . (string)$this->result);
 
         $matchedPolicies = [];
-        foreach ($this->policyMap[$this->result->intent_get()] as $policy) {
+        foreach ($this->policy_map[$this->result->intent_get()] as $policy) {
             /**
              * @var $policy policy
              */
@@ -209,24 +177,6 @@ class manager
     }
 
     /**
-     * @return mixed
-     */
-    public function getServiceId()
-    {
-        return $this->serviceId;
-    }
-
-    /**
-     * @param string $service_id
-     * @return manager
-     */
-    public function setServiceId($service_id)
-    {
-        $this->serviceId = $service_id;
-        return $this;
-    }
-
-    /**
      * inject request parameters from client side
      *
      * @param mixed $request_params
@@ -250,6 +200,29 @@ class manager
     public function request_rarams_get()
     {
         return $this->request_params;
+    }
+
+    /**
+     * inject nlu results from NLU providers
+     *
+     * @param $results
+     * @return $this
+     * @throws \Exception
+     */
+    public function results_set($results)
+    {
+        $result_map = $this->parser->parse($results);
+        $service_id = $this->service->service_id_get();
+        if ($service_id) {
+            $this->result = $result_map[$service_id];
+            if (!$this->result) {
+                return $this;
+            }
+            $this->service->result_set($this->result);
+        } else {
+            throw new \Exception('$service_id is not set.');
+        }
+        return $this;
     }
 
     /**
@@ -277,8 +250,21 @@ class manager
         return $this->service;
     }
 
+    /**
+     * @param service $service
+     * @return $this
+     */
+    public function service_set(service $service)
+    {
+        $this->service = $service;
+        return $this;
+    }
+
     /** @var string access_token */
-    static protected $access_token = '';
+    static protected $_access_token = '';
+
+    /** @var $this */
+    static protected $_instance;
 
     /**
      * entry of the uskit, build PolicyManager
@@ -286,17 +272,20 @@ class manager
      * @return manager
      * @throws \Exception
      */
-    static public function instance(array $config)
+    static public function instance(array $config = [])
     {
+        if(static::$_instance) {
+            return static::$_instance;
+        }
         if(empty($config) || !is_array($config) || empty($config['service_id'])){
             throw new \Exception('参数$config必须为有效的数组数据！');
         }
-        if(empty(static::$access_token)){
+        if(empty(static::$_access_token)){
             if(empty($config['api_secret']) || empty($config['api_key'])){
                 throw new \Exception('参数$config[\'api_secret\']与$config[\'api_key\']不能为空！');
             }
-            static::$access_token = request::access_token_get($config['api_key'],$config['api_secret']);
-            if(empty(static::$access_token)){
+            static::$_access_token = request::access_token_get($config['api_key'],$config['api_secret']);
+            if(empty(static::$_access_token)){
                 throw new \Exception('获取$access_token有误');
             }
         }
@@ -325,7 +314,7 @@ class manager
             $service = new service($session, $retry_limit);
         }
 
-        $manager->setServiceId($config['service_id'])->setService($service)->load($data['policies']);
+        $manager->service_id_set($config['service_id'])->setService($service)->load($data['policies']);
 
         return $manager;
     }
@@ -350,7 +339,4 @@ class manager
             static::$_debug->logs($key,$msg);
         }
     }
-
-
-
 }

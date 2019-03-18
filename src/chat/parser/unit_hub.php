@@ -65,12 +65,12 @@ class unit_hub implements parser
                 $slot = new slot();
                 $slot->key_set($unitSlot['name'])
                     ->value_set($unitSlot['original_word'])
-                    ->setValueNormalized($unitSlot['normalized_word'])
-                    ->setBegin($unitSlot['begin']);
+                    ->value_normalized_set($unitSlot['normalized_word'])
+                    ->begin_set($unitSlot['begin']);
                 $slotsMap[] = $slot;
             }
             usort($slotsMap, function(slot $a, slot $b) {
-                return $a->getBegin() < $b->getBegin() ? -1 : 1;
+                return $a->begin_get() < $b->begin_get() ? -1 : 1;
             });
             foreach ($slotsMap as $item) {
                 $quResult->slot_add($item);
